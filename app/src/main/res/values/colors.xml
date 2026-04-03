@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="space_ink">#050816</color>
+    <color name="space_midnight">#101A34</color>
+    <color name="space_haze">#1B2C52</color>
+    <color name="console_card">#CC0E1730</color>
+    <color name="console_card_alt">#CC142346</color>
+    <color name="console_line">#335A7DB5</color>
+    <color name="console_text">#FFF4F8FF</color>
+    <color name="console_subtext">#FFA9B7D6</color>
+    <color name="console_cyan">#FF6FE7FF</color>
+    <color name="console_green">#FF42EBA1</color>
+    <color name="console_green_dim">#3342EBA1</color>
+    <color name="console_gold">#FFFFC857</color>
+    <color name="console_gold_dim">#33FFC857</color>
+    <color name="console_red">#FFFF6B6B</color>
+    <color name="console_red_dim">#33FF6B6B</color>
+    <color name="console_button_primary">#FF3B6EFF</color>
+    <color name="console_button_secondary">#FF1E2E57</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
