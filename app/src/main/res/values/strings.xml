@@ -4,6 +4,7 @@
     <string name="mission_subtitle">Mission Control // Near-Earth Object telemetry</string>
 
     <string name="section_mission_status">Mission Status</string>
+    <string name="section_alert_feed">External Alert Feed</string>
     <string name="section_asteroid_intel">Asteroid Intel</string>
     <string name="section_alert_protocol">Alert Protocol</string>
 
@@ -25,6 +26,12 @@
     <string name="chip_notifications_needed">Notifications Offline</string>
     <string name="chip_signal_idle">Signal Timer Idle</string>
     <string name="chip_signal_armed">Signal Timer Armed</string>
+    <string name="alert_feed_label_standby">STANDBY</string>
+    <string name="alert_feed_label_queued">QUEUED</string>
+    <string name="alert_feed_label_signal">SIGNAL</string>
+    <string name="alert_feed_label_warning">WARNING</string>
+    <string name="alert_feed_label_evaded">EVADED</string>
+    <string name="alert_feed_label_opened">OPENED</string>
 
     <string name="asteroid_hazard_label">Threat Level</string>
     <string name="asteroid_distance_label">Closest Miss Distance (km)</string>
@@ -37,16 +44,24 @@
     <string name="value_placeholder">---</string>
     <string name="value_unknown">Unknown</string>
     <string name="diameter_range_value">%1$s - %2$s km</string>
+    <string name="alert_feed_empty_title">No outbound notifications yet</string>
+    <string name="alert_feed_empty_detail">Scan space or arm the signal timer to generate a themed mission alert.</string>
+    <string name="alert_feed_queue_title">Outbound alert queued</string>
+    <string name="alert_feed_queue_detail">Mission Control is packaging the latest scan result for dispatch.</string>
+    <string name="alert_feed_signal_queued_detail">Transmission timer armed for an 8-second relay test.</string>
 
     <string name="mission_controls_copy">Run a live asteroid scan to fetch one Near-Earth Object at a time, or arm the timer to simulate an incoming transmission from deep space.</string>
     <string name="alert_protocol_copy">- Scan results queue a delayed report notification after analysis.\n- Hazardous objects trigger a warning alert.\n- Safe passes trigger an evasion update.\n- The signal timer produces a second delayed notification for testing.</string>
 
     <string name="notification_signal_title">Incoming Signal Detected</string>
     <string name="notification_signal_message">Mission control picked up a delayed transmission from the NEO network.</string>
+    <string name="notification_signal_subtext">Deep-Space Relay</string>
     <string name="notification_hazard_title">Hazard Detected</string>
     <string name="notification_hazard_message">%1$s is flagged as potentially hazardous. Closest tracked miss distance: %2$s km.</string>
+    <string name="notification_hazard_subtext">Threat Monitor</string>
     <string name="notification_safe_title">Threat Evaded</string>
     <string name="notification_safe_message">%1$s completed its pass without a hazard flag.</string>
+    <string name="notification_safe_subtext">Trajectory Desk</string>
 
     <string name="notification_channel_updates_name">Mission Updates</string>
     <string name="notification_channel_updates_description">Routine scan reports and scheduled signal updates.</string>

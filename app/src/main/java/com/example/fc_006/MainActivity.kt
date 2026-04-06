@@ -33,6 +33,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var notificationPermissionChip: TextView
     private lateinit var signalStatusChip: TextView
+    private lateinit var alertFeedBadge: TextView
+    private lateinit var alertFeedTitle: TextView
+    private lateinit var alertFeedDetail: TextView
     private lateinit var scanProgress: ProgressBar
     private lateinit var scanButton: MaterialButton
     private lateinit var signalButton: MaterialButton
@@ -100,6 +103,9 @@ class MainActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         notificationPermissionChip = findViewById(R.id.notificationPermissionChip)
         signalStatusChip = findViewById(R.id.signalStatusChip)
+        alertFeedBadge = findViewById(R.id.alertFeedBadge)
+        alertFeedTitle = findViewById(R.id.alertFeedTitle)
+        alertFeedDetail = findViewById(R.id.alertFeedDetail)
         scanProgress = findViewById(R.id.scanProgress)
         scanButton = findViewById(R.id.scanButton)
         signalButton = findViewById(R.id.signalButton)
@@ -122,6 +128,12 @@ class MainActivity : AppCompatActivity() {
         resetAsteroidPanel()
         updateSignalChip(R.string.chip_signal_idle, R.color.console_green_dim)
         updateNotificationPermissionChip(notificationHelper.canSendNotifications())
+        updateAlertFeed(
+            labelText = getString(R.string.alert_feed_label_standby),
+            labelColorRes = R.color.console_green_dim,
+            title = getString(R.string.alert_feed_empty_title),
+            detail = getString(R.string.alert_feed_empty_detail)
+        )
         scanProgress.visibility = View.GONE
     }
 
@@ -211,6 +223,12 @@ class MainActivity : AppCompatActivity() {
         signalButton.text = getString(R.string.signal_timer_armed_button)
         updateSignalChip(R.string.chip_signal_armed, R.color.console_gold_dim)
         setMissionStatus(getString(R.string.status_signal_timer_armed))
+        updateAlertFeed(
+            labelText = getString(R.string.alert_feed_label_queued),
+            labelColorRes = R.color.console_gold_dim,
+            title = getString(R.string.notification_signal_title),
+            detail = getString(R.string.alert_feed_signal_queued_detail)
+        )
 
         val signalRunnable = Runnable {
             delayedSignalRunnable = null
@@ -219,6 +237,12 @@ class MainActivity : AppCompatActivity() {
             updateSignalChip(R.string.chip_signal_idle, R.color.console_green_dim)
             notificationHelper.showIncomingSignal()
             setMissionStatus(getString(R.string.status_signal_sent))
+            updateAlertFeed(
+                labelText = getString(R.string.alert_feed_label_signal),
+                labelColorRes = R.color.console_cyan_dim,
+                title = getString(R.string.notification_signal_title),
+                detail = getString(R.string.notification_signal_message)
+            )
         }
 
         delayedSignalRunnable = signalRunnable
@@ -228,18 +252,41 @@ class MainActivity : AppCompatActivity() {
     private fun queueScanAlert(asteroid: Asteroid) {
         withNotificationPermission {
             delayedScanAlertRunnable?.let(mainHandler::removeCallbacks)
+            updateAlertFeed(
+                labelText = getString(R.string.alert_feed_label_queued),
+                labelColorRes = R.color.console_gold_dim,
+                title = getString(R.string.alert_feed_queue_title),
+                detail = getString(R.string.alert_feed_queue_detail)
+            )
 
             val alertRunnable = Runnable {
                 delayedScanAlertRunnable = null
                 if (asteroid.isPotentiallyHazardous) {
+                    val distance = formatDistanceValue(
+                        asteroid.closeApproachData.firstOrNull()?.missDistance?.kilometers
+                    )
                     notificationHelper.showHazardDetected(
                         asteroid.name,
-                        formatDistanceValue(
-                            asteroid.closeApproachData.firstOrNull()?.missDistance?.kilometers
+                        distance
+                    )
+                    updateAlertFeed(
+                        labelText = getString(R.string.alert_feed_label_warning),
+                        labelColorRes = R.color.console_red_dim,
+                        title = getString(R.string.notification_hazard_title),
+                        detail = getString(
+                            R.string.notification_hazard_message,
+                            asteroid.name,
+                            distance
                         )
                     )
                 } else {
                     notificationHelper.showThreatEvaded(asteroid.name)
+                    updateAlertFeed(
+                        labelText = getString(R.string.alert_feed_label_evaded),
+                        labelColorRes = R.color.console_green_dim,
+                        title = getString(R.string.notification_safe_title),
+                        detail = getString(R.string.notification_safe_message, asteroid.name)
+                    )
                 }
                 setMissionStatus(getString(R.string.status_alert_dispatched))
             }
@@ -276,9 +323,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleNotificationIntent(intent: Intent?) {
+        val notificationTitle =
+            intent?.getStringExtra(MissionNotificationHelper.EXTRA_NOTIFICATION_TITLE)
         val notificationMessage =
             intent?.getStringExtra(MissionNotificationHelper.EXTRA_NOTIFICATION_MESSAGE) ?: return
         setMissionStatus(notificationMessage)
+        updateAlertFeed(
+            labelText = getString(R.string.alert_feed_label_opened),
+            labelColorRes = R.color.console_gold_dim,
+            title = notificationTitle ?: getString(R.string.section_alert_feed),
+            detail = notificationMessage
+        )
+        intent.removeExtra(MissionNotificationHelper.EXTRA_NOTIFICATION_TITLE)
         intent.removeExtra(MissionNotificationHelper.EXTRA_NOTIFICATION_MESSAGE)
     }
 
@@ -308,6 +364,17 @@ class MainActivity : AppCompatActivity() {
         view.text = text
         view.backgroundTintList =
             ColorStateList.valueOf(ContextCompat.getColor(this, colorRes))
+    }
+
+    private fun updateAlertFeed(
+        labelText: String,
+        labelColorRes: Int,
+        title: String,
+        detail: String
+    ) {
+        updateChip(alertFeedBadge, labelText, labelColorRes)
+        alertFeedTitle.text = title
+        alertFeedDetail.text = detail
     }
 
     private fun formatDistanceValue(rawDistance: String?): String {

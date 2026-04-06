@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -64,7 +66,10 @@ class MissionNotificationHelper(context: Context) {
             title = appContext.getString(R.string.notification_signal_title),
             message = appContext.getString(R.string.notification_signal_message),
             priority = NotificationCompat.PRIORITY_DEFAULT,
-            iconRes = android.R.drawable.ic_dialog_info
+            iconRes = R.drawable.ic_notification_signal,
+            colorRes = R.color.console_cyan,
+            subText = appContext.getString(R.string.notification_signal_subtext),
+            category = NotificationCompat.CATEGORY_STATUS
         )
     }
 
@@ -79,7 +84,10 @@ class MissionNotificationHelper(context: Context) {
                 distanceKm
             ),
             priority = NotificationCompat.PRIORITY_HIGH,
-            iconRes = android.R.drawable.ic_dialog_alert
+            iconRes = R.drawable.ic_notification_hazard,
+            colorRes = R.color.console_red,
+            subText = appContext.getString(R.string.notification_hazard_subtext),
+            category = NotificationCompat.CATEGORY_ALARM
         )
     }
 
@@ -90,7 +98,10 @@ class MissionNotificationHelper(context: Context) {
             title = appContext.getString(R.string.notification_safe_title),
             message = appContext.getString(R.string.notification_safe_message, asteroidName),
             priority = NotificationCompat.PRIORITY_DEFAULT,
-            iconRes = android.R.drawable.ic_dialog_info
+            iconRes = R.drawable.ic_notification_evaded,
+            colorRes = R.color.console_green,
+            subText = appContext.getString(R.string.notification_safe_subtext),
+            category = NotificationCompat.CATEGORY_STATUS
         )
     }
 
@@ -100,7 +111,10 @@ class MissionNotificationHelper(context: Context) {
         title: String,
         message: String,
         priority: Int,
-        iconRes: Int
+        @DrawableRes iconRes: Int,
+        @ColorRes colorRes: Int,
+        subText: String,
+        category: String
     ) {
         if (!canSendNotifications()) {
             return
@@ -110,17 +124,23 @@ class MissionNotificationHelper(context: Context) {
             .setSmallIcon(iconRes)
             .setContentTitle(title)
             .setContentText(message)
+            .setSubText(subText)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setPriority(priority)
+            .setCategory(category)
+            .setColor(ContextCompat.getColor(appContext, colorRes))
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOnlyAlertOnce(true)
             .setAutoCancel(true)
-            .setContentIntent(createContentIntent(message))
+            .setContentIntent(createContentIntent(title, message))
             .build()
 
         NotificationManagerCompat.from(appContext).notify(notificationId, notification)
     }
 
-    private fun createContentIntent(message: String): PendingIntent {
+    private fun createContentIntent(title: String, message: String): PendingIntent {
         val launchIntent = Intent(appContext, MainActivity::class.java).apply {
+            putExtra(EXTRA_NOTIFICATION_TITLE, title)
             putExtra(EXTRA_NOTIFICATION_MESSAGE, message)
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -134,6 +154,7 @@ class MissionNotificationHelper(context: Context) {
     }
 
     companion object {
+        const val EXTRA_NOTIFICATION_TITLE = "notification_title"
         const val EXTRA_NOTIFICATION_MESSAGE = "notification_message"
 
         private const val UPDATES_CHANNEL_ID = "mission_updates"

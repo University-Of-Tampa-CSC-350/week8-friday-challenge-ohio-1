@@ -9,6 +9,7 @@
     <color name="console_text">#FFF4F8FF</color>
     <color name="console_subtext">#FFA9B7D6</color>
     <color name="console_cyan">#FF6FE7FF</color>
+    <color name="console_cyan_dim">#336FE7FF</color>
     <color name="console_green">#FF42EBA1</color>
     <color name="console_green_dim">#3342EBA1</color>
     <color name="console_gold">#FFFFC857</color>
